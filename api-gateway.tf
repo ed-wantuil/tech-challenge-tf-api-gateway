@@ -8,7 +8,7 @@ resource "aws_api_gateway_authorizer" "cognito_authorizer" {
   type                             = "COGNITO_USER_POOLS"
   rest_api_id                      = aws_api_gateway_rest_api.api.id
   identity_source                  = "method.request.header.Authorization"
-  provider_arns                    = aws_cognito_user_pool.techchallenge-pool.arn
+  provider_arns                    = [aws_cognito_user_pool.techchallenge-pool.arn]
 }
 
 resource "aws_api_gateway_resource" "product_resource" {
