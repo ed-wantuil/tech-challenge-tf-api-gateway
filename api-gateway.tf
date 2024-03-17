@@ -122,7 +122,7 @@ resource "aws_api_gateway_integration" "customer_post_integration" {
 resource "aws_api_gateway_resource" "order_update_delivery_status_resource" {
   rest_api_id = aws_api_gateway_rest_api.api.id
   parent_id   = aws_api_gateway_rest_api.api.root_resource_id
-  path_part   = "order/update-delivery-status"
+  path_part   = "update-delivery-status"
 }
 
 resource "aws_api_gateway_method" "order_update_delivery_status_patch" {
@@ -133,15 +133,15 @@ resource "aws_api_gateway_method" "order_update_delivery_status_patch" {
   authorizer_id = aws_api_gateway_authorizer.cognito_authorizer.id
 }
 
-#resource "aws_api_gateway_integration" "order_update_delivery_status_patch_integration" {
-#  rest_api_id = aws_api_gateway_rest_api.api.id
-#  resource_id = aws_api_gateway_resource.order_update_delivery_status_resource.id
-#  http_method = aws_api_gateway_method.order_update_delivery_status_patch.http_method
-#
-#  type = "HTTP"
-#  integration_http_method = "PATCH"
-#  uri = "http://aafd7edcf68c34e1eaa7e5f945bcacc5-75308363.us-east-1.elb.amazonaws.com:8080/order/update-delivery-status"
-#}
+resource "aws_api_gateway_integration" "order_update_delivery_status_patch_integration" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.order_update_delivery_status_resource.id
+  http_method = aws_api_gateway_method.order_update_delivery_status_patch.http_method
+
+  type = "HTTP"
+  integration_http_method = "PATCH"
+  uri = "http://aafd7edcf68c34e1eaa7e5f945bcacc5-75308363.us-east-1.elb.amazonaws.com:8080/order/update-delivery-status"
+}
 
 resource "aws_api_gateway_deployment" "api_deployment" {
   depends_on = [
