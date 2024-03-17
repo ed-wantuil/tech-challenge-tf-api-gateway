@@ -32,8 +32,6 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
-          TF_VAR_database_username: ${{ secrets.DATABASE_USERNAME }}
-          TF_VAR_database_password: ${{ secrets.DATABASE_PASSWORD }}
         run: terraform plan
 
       - name: Terraform Apply
@@ -42,7 +40,5 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
-          TF_VAR_database_username: ${{ secrets.DATABASE_USERNAME }}
-          TF_VAR_database_password: ${{ secrets.DATABASE_PASSWORD }}
         run: terraform apply -auto-approve
         timeout-minutes: 20
