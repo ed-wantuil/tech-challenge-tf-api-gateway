@@ -12,13 +12,6 @@ resource "aws_lambda_function" "auth" {
 
   filename         = data.archive_file.auth.output_path
   source_code_hash = data.archive_file.auth.output_base64sha256
-
-  environment {
-    variables = {
-      USER_POOL_ID = aws_cognito_user_pool.techchallenge-pool.id
-      CLIENT_ID    = aws_cognito_user_pool_client.techchallenge-client.id
-    }
-  }
 }
 
 data "archive_file" "create" {
@@ -35,11 +28,4 @@ resource "aws_lambda_function" "create" {
 
   filename         = data.archive_file.create.output_path
   source_code_hash = data.archive_file.create.output_base64sha256
-
-  environment {
-    variables = {
-      USER_POOL_ID = aws_cognito_user_pool.techchallenge-pool.id
-      CLIENT_ID    = aws_cognito_user_pool_client.techchallenge-client.id
-    }
-  }
 }
