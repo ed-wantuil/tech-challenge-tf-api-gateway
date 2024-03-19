@@ -1,5 +1,6 @@
 import boto3
 import os
+import json
 
 cognito_client = boto3.client('cognito-idp')
 
@@ -7,7 +8,7 @@ USER_POOL_ID = os.environ['USER_POOL_ID']
 CLIENT_ID = os.environ['CLIENT_ID']
 
 def lambda_handler(event, context):
-    cpf = event['cpf']
+    cpf = "unidentified"
 
 
     username = cpf
@@ -19,12 +20,26 @@ def lambda_handler(event, context):
     }
 
     try:
-        cognito_client.admin_set_user_password(
-            UserPoolId=USER_POOL_ID,
-            Username=username,
-            Password=password,
-            Permanent=True
-        )
+        try:
+            cognito_client.admin_set_user_password(
+                UserPoolId=USER_POOL_ID,
+                Username=username,
+                Password=password,
+                Permanent=True
+            )
+        except cognito_client.exceptions.UserNotFoundException:
+            cognito_client.admin_create_user(
+                UserPoolId=USER_POOL_ID,
+                Username=username,
+                TemporaryPassword=password
+            )
+            # Define a senha do usuário recém-criado como permanente
+            cognito_client.admin_set_user_password(
+                UserPoolId=USER_POOL_ID,
+                Username=username,
+                Password=password,
+                Permanent=True
+            )
 
         auth_response = cognito_client.admin_initiate_auth(
             UserPoolId=USER_POOL_ID,

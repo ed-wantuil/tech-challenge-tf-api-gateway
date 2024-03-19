@@ -1,40 +1,66 @@
 import boto3
 import os
+import requests
 
-# Initialize the Cognito IDP client
 cognito_client = boto3.client('cognito-idp')
 
 USER_POOL_ID = os.environ['USER_POOL_ID']
-CLIENT_ID = os.environ['CLIENT_ID']
+API_ENDPOINT = "https://example.com/api/endpoint"
 
 def lambda_handler(event, context):
-    username = event['username']
+    cpf = event['cpf']
+    body = event
+
+    username = cpf
+    password = cpf
+
+    auth_parameters = {
+        'USERNAME': username,
+        'PASSWORD': password
+    }
 
     try:
-        auth_response = cognito_client.admin_get_user(
+        cognito_client.admin_create_user(
             UserPoolId=USER_POOL_ID,
-            Username=username
+            Username=username,
+            TemporaryPassword=password
+        )
+        cognito_client.admin_set_user_password(
+            UserPoolId=USER_POOL_ID,
+            Username=username,
+            Password=password,
+            Permanent=True
         )
 
-        return {
-            'statusCode': 200,
-            'body': {
-                'message': 'User authenticated successfully',
-                'id_token': auth_response['AuthenticationResult']['IdToken']
+        response = requests.post(API_ENDPOINT, json=body)
+
+        if response.status_code == 200:
+            # Retorna a resposta da API diretamente
+            return {
+                'statusCode': 200,
+                'body': response.json()  # Assumindo que a API retorna um JSON
             }
-        }
-    except cognito_client.exceptions.NotAuthorizedException:
+        else:
+            return {
+                'statusCode': response.status_code,
+                'body': {
+                    'message': 'Erro ao chamar a API',
+                    'error': response.text
+                }
+            }
+    except cognito_client.exceptions.ClientError as e:
         return {
-            'statusCode': 401,
+            'statusCode': 400,
             'body': {
-                'message': 'Authentication failed'
+                'message': 'Erro ao criar usuário',
+                'error': str(e)
             }
         }
     except Exception as e:
         return {
             'statusCode': 500,
             'body': {
-                'message': 'Internal server error',
+                'message': 'Erro interno do servidor',
                 'error': str(e)
             }
         }
